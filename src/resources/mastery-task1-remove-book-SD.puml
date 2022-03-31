@@ -1,1 +1,50 @@
-PARTICIPANTS: use this file for creating the remove book from catalog diagram in mastery task 01
+
+@startuml
+title Get Playlist
+
+actor Client
+participant "Load Balance/ECS"
+participant RemoveBookFromCatalogActivity
+participant CatalogDao
+
+
+database DynamoDB
+
+Client -> "Load Balance/ECS" : HTTP reuqest
+activate Client
+"Load Balance/ECS" -> RemoveBookFromCatalogActivity : execute(RemoveBookFromCatalogRequest)
+activate "Load Balance/ECS"
+
+RemoveBookFromCatalogActivity -> CatalogDao : removeBookFromCatalog(bookId)
+activate RemoveBookFromCatalogActivity
+activate CatalogDao
+CatalogDao -> DynamoDB : changed publishing status item(inactive to true)
+activate DynamoDB
+
+alt if a empty book id in the request
+
+    RemoveBookFromCatalogActivity <-- CatalogDao : ValidationException
+    "Load Balance/ECS" <-- RemoveBookFromCatalogActivity : ValidationException
+    Client <-- "Load Balance/ECS" : 400 Response
+else otherwise, continue
+end
+
+alt if book id is not found or the corresponding book is not active in the catalog
+
+    RemoveBookFromCatalogActivity <-- CatalogDao : BookNotFoundException
+    "Load Balance/ECS" <-- RemoveBookFromCatalogActivity : BookNotFoundException
+    Client <-- "Load Balance/ECS" : 400 Response
+else otherwise, continue
+end
+
+CatalogDao <-- DynamoDB : return Book with (inactive to true) publishing status
+deactivate DynamoDB
+CatalogDao --> RemoveBookFromCatalogActivity : return Book with (inactive to true) publishing status
+deactivate CatalogDao
+RemoveBookFromCatalogActivity --> "Load Balance/ECS": return Book with (inactive to true) publishing status
+deactivate RemoveBookFromCatalogActivity
+"Load Balance/ECS" --> Client : 200 Response
+deactivate "Load Balance/ECS"
+deactivate Client
+
+@enduml

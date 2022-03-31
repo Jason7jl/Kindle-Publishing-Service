@@ -11,6 +11,7 @@ public class GetPublishingStatusActivity {
     public GetPublishingStatusActivity() {}
 
     public GetPublishingStatusResponse execute(GetPublishingStatusRequest publishingStatusRequest) {
+
         return null;
     }
 }

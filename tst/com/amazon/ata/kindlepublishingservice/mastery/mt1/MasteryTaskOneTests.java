@@ -27,7 +27,7 @@ public class MasteryTaskOneTests extends IntegrationTestBase {
 
     @Test
     public void removeBook_activeCatalogItem_setsToInactive() {
-        // GIVEN
+        // GIVEN ingit
         CatalogItemVersion catalogItemVersion = new CatalogItemVersion();
         catalogItemVersion.setBookId(bookId);
         catalogItemVersion.setVersion(1);
