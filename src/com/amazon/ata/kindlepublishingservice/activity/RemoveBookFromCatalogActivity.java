@@ -20,7 +20,7 @@ public class RemoveBookFromCatalogActivity {
     RemoveBookFromCatalogActivity() {}
     public RemoveBookFromCatalogResponse execute(RemoveBookFromCatalogRequest removeBookFromCatalogRequest) {
 
-        DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_WEST_2));
+        DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient());
         CatalogDao catalogDao = new CatalogDao(dynamoDBMapper);
         CatalogItemVersion inactiveBook = catalogDao.removeBookFromCatalog(removeBookFromCatalogRequest.getBookId());
 

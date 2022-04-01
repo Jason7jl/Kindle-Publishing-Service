@@ -44,6 +44,19 @@ public class CatalogDao {
         return book;
     }
 
+    // check if the provided bookId exists in the catalog
+    public void validateBookExists(String bookId) {
+        // if book doesn't exist, throw a BookNotFoundException
+
+        CatalogItemVersion book = getLatestVersionOfBook(bookId);
+
+        if (book == null) {
+            throw new BookNotFoundException(String.format("The book with the %s doesn't exist!", bookId));
+        }
+        if (book.isInactive()) {
+            throw new BookNotFoundException(String.format("The book with the %s is inactive!", bookId));
+        }
+    }
     public CatalogItemVersion removeBookFromCatalog(String bookId) {
 
         if (bookId == null || bookId.isEmpty()) {
