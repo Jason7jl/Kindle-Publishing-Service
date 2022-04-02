@@ -53,10 +53,9 @@ public class CatalogDao {
         if (book == null) {
             throw new BookNotFoundException(String.format("The book with the %s doesn't exist!", bookId));
         }
-        if (book.isInactive()) {
-            throw new BookNotFoundException(String.format("The book with the %s is inactive!", bookId));
-        }
     }
+
+
     public CatalogItemVersion removeBookFromCatalog(String bookId) {
 
         if (bookId == null || bookId.isEmpty()) {

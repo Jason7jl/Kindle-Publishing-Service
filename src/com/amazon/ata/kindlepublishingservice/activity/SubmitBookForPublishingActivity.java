@@ -26,7 +26,7 @@ public class SubmitBookForPublishingActivity {
 
     private PublishingStatusDao publishingStatusDao;
     private BookPublishRequestManager bookPublishRequestManager;
-    CatalogDao catalogDao;
+    private CatalogDao catalogDao;
 
 
     /**
@@ -35,8 +35,10 @@ public class SubmitBookForPublishingActivity {
      * @param publishingStatusDao PublishingStatusDao to access the publishing status table.
      */
     @Inject
-    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao) {
+    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao,CatalogDao catalogDao, BookPublishRequestManager bookPublishRequestManager) {
         this.publishingStatusDao = publishingStatusDao;
+        this.bookPublishRequestManager = bookPublishRequestManager;
+        this.catalogDao = catalogDao;
     }
 
     /**
@@ -49,21 +51,32 @@ public class SubmitBookForPublishingActivity {
      * to check the publishing state of the book.
      */
     public SubmitBookForPublishingResponse execute(SubmitBookForPublishingRequest request) {
+
         final BookPublishRequest bookPublishRequest = BookPublishRequestConverter.toBookPublishRequest(request);
 
         // TODO: If there is a book ID in the request, validate it exists in our catalog
         // TODO: Submit the BookPublishRequest for processing
 
+        PublishingStatusItem item;
+
         if (request.getBookId() != null) {
             catalogDao.validateBookExists(request.getBookId());
+
+                    item = publishingStatusDao.setPublishingStatus(bookPublishRequest.getPublishingRecordId(),
+                    PublishingRecordStatus.QUEUED,
+                    bookPublishRequest.getBookId());
+        } else {
+
+           item = publishingStatusDao.setPublishingStatus(bookPublishRequest.getPublishingRecordId(),
+            PublishingRecordStatus.QUEUED,
+                   null);
+
         }
-       bookPublishRequestManager.addBookPublishRequest(bookPublishRequest);
+
+        bookPublishRequestManager.addBookPublishRequest(bookPublishRequest);
 
 
 
-        PublishingStatusItem item =  publishingStatusDao.setPublishingStatus(bookPublishRequest.getPublishingRecordId(),
-                PublishingRecordStatus.QUEUED,
-                bookPublishRequest.getBookId());
 
         return SubmitBookForPublishingResponse.builder()
                 .withPublishingRecordId(item.getPublishingRecordId())
