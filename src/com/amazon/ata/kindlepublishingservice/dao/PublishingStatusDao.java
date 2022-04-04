@@ -7,10 +7,12 @@ import com.amazon.ata.kindlepublishingservice.utils.KindlePublishingUtils;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import javax.inject.Inject;
+import javax.validation.ValidationException;
 
 /**
  * Accesses the Publishing Status table.
@@ -76,5 +78,27 @@ public class PublishingStatusDao {
         item.setBookId(bookId);
         dynamoDbMapper.save(item);
         return item;
+    }
+
+    public List<PublishingStatusItem> getPublishingStatus(String publishingStatusId) {
+
+        if (publishingStatusId == null) {
+            throw new ValidationException
+                    (String.format("The publishing status with the %s doesn't exist!", publishingStatusId));
+        }
+
+        PublishingStatusItem publishingStatusItem = new PublishingStatusItem();
+        publishingStatusItem.setPublishingRecordId(publishingStatusId);
+
+        DynamoDBQueryExpression<PublishingStatusItem> queryExpression = new DynamoDBQueryExpression()
+                .withHashKeyValues(publishingStatusItem)
+                .withScanIndexForward(false);
+
+     List<PublishingStatusItem> results = dynamoDbMapper.query(PublishingStatusItem.class, queryExpression);
+        if (results == null || results.isEmpty()) {
+           throw new PublishingStatusNotFoundException(String.format("The item with the %s doesn't exist!", publishingStatusId));
+        }
+
+        return results;
     }
 }
