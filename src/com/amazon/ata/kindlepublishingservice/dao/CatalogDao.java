@@ -72,6 +72,33 @@ public class CatalogDao {
         return inactiveBook;
     }
 
+    public CatalogItemVersion createOrUpdateBook(KindleFormattedBook kindleFormattedBook) {
+
+        CatalogItemVersion catalogItemVersion;
+        if (kindleFormattedBook.getBookId() == null) {
+
+            catalogItemVersion = new CatalogItemVersion();
+            catalogItemVersion.setBookId(KindlePublishingUtils.generateBookId());
+            catalogItemVersion.setVersion(1);
+            catalogItemVersion.setInactive(false);
+
+        } else {
+
+            catalogItemVersion = getBookFromCatalog(kindleFormattedBook.getBookId());
+            catalogItemVersion.setVersion(catalogItemVersion.getVersion() + 1);
+            removeBookFromCatalog(kindleFormattedBook.getBookId());
+        }
+
+        catalogItemVersion.setTitle(kindleFormattedBook.getTitle());
+        catalogItemVersion.setAuthor(kindleFormattedBook.getAuthor());
+        catalogItemVersion.setText(kindleFormattedBook.getText());
+        catalogItemVersion.setGenre(kindleFormattedBook.getGenre());
+        dynamoDbMapper.save(catalogItemVersion);
+
+
+        return catalogItemVersion;
+    }
+
     // Returns null if no version exists for the provided bookId
     private CatalogItemVersion getLatestVersionOfBook(String bookId) {
         CatalogItemVersion book = new CatalogItemVersion();

@@ -1,6 +1,6 @@
 
 @startuml
-title Get Playlist
+title RemoveBookFromCatalogActivity
 
 actor Client
 participant "Load Balance/ECS"
