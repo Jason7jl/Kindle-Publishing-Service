@@ -86,6 +86,7 @@ public class CatalogDao {
 
             catalogItemVersion = getBookFromCatalog(kindleFormattedBook.getBookId());
             catalogItemVersion.setVersion(catalogItemVersion.getVersion() + 1);
+            catalogItemVersion.setInactive(false);
             removeBookFromCatalog(kindleFormattedBook.getBookId());
         }
 

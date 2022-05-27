@@ -1,60 +1,5 @@
 @startuml
-class DataAccessModule {
-+ DynamoDBMapper provideDynamoDBMapper()
-}
-class BookPublishRequestConverter {
-+ {static} BookPublishRequest toBookPublishRequest(SubmitBookForPublishingRequest)
-}
-class BookPublisher {
-- {static} Logger log
-- ScheduledExecutorService scheduledExecutorService
-- Runnable publishTask
-- boolean isRunning
-+ void start()
-+ void stop()
-~ boolean isRunning()
-}
-class GetBookResponse {
-- Book book
-- List<BookRecommendation> recommendations
-+ Book getBook()
-+ void setBook(Book)
-+ List<BookRecommendation> getRecommendations()
-+ void setRecommendations(List<BookRecommendation>)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class GetBookResponse.Builder {
-- Book book
-- List<BookRecommendation> recommendations
-+ Builder withBook(Book)
-+ Builder withRecommendations(List<BookRecommendation>)
-+ GetBookResponse build()
-}
-class BookRecommendation {
-- String title
-- String author
-- String asin
-+ String getTitle()
-+ void setTitle(String)
-+ String getAuthor()
-+ void setAuthor(String)
-+ String getAsin()
-+ void setAsin(String)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class BookRecommendation.Builder {
-- String title
-- String author
-- String asin
-+ Builder withTitle(String)
-+ Builder withAuthor(String)
-+ Builder withAsin(String)
-+ BookRecommendation build()
-}
+
 class SubmitBookForPublishingActivity {
 - PublishingStatusDao publishingStatusDao
 + execute(SubmitBookForPublishingRequest) : SubmitBookForPublishingResponse
@@ -62,115 +7,14 @@ class SubmitBookForPublishingActivity {
 class BookNotFoundException {
 - {static} long serialVersionUID
 }
-interface ApplicationComponent {
-~ GetBookActivity provideGetBookActivity()
-~ GetPublishingStatusActivity provideGetPublishingStatusActivity()
-~ RemoveBookFromCatalogActivity provideRemoveBookFromCatalogActivity()
-~ SubmitBookForPublishingActivity provideSubmitBookForPublishingActivity()
-~ ATAKindlePublishingServiceManager provideATAKindlePublishingServiceManager()
-}
-class BookPublishRequest {
-- String publishingRecordId
-- String bookId
-- String title
-- String author
-- String text
-- BookGenre genre
-+ String getPublishingRecordId()
-+ String getBookId()
-+ String getTitle()
-+ String getAuthor()
-+ String getText()
-+ BookGenre getGenre()
-+ {static} Builder builder()
-}
-class BookPublishRequest.Builder {
-- String publishingRecordId
-- String bookId
-- String title
-- String author
-- String text
-- BookGenre genre
-+ Builder withPublishingRecordId(String)
-+ Builder withBookId(String)
-+ Builder withTitle(String)
-+ Builder withAuthor(String)
-+ Builder withText(String)
-+ Builder withGenre(BookGenre)
-+ BookPublishRequest build()
-}
-class Book {
-- String bookId
-- String title
-- String author
-- String text
-- String genre
-- int version
-+ String getBookId()
-+ void setBookId(String)
-+ String getTitle()
-+ void setTitle(String)
-+ String getAuthor()
-+ void setAuthor(String)
-+ String getText()
-+ void setText(String)
-+ String getGenre()
-+ void setGenre(String)
-+ int getVersion()
-+ void setVersion(int)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class Book.Builder {
-- String bookId
-- String title
-- String author
-- String text
-- String genre
-- int version
-+ Builder withBookId(String)
-+ Builder withTitle(String)
-+ Builder withAuthor(String)
-+ Builder withText(String)
-+ Builder withGenre(String)
-+ Builder withVersion(int)
-+ Book build()
-}
+
 class CatalogDao {
 - dynamoDbMapper : DynamoDBMapper
 + CatalogItemVersion getBookFromCatalog(String)
 - CatalogItemVersion getLatestVersionOfBook(String)
 }
-class CatalogItemConverter {
-+ {static} Book toBook(CatalogItemVersion)
-}
-class GetBookRequest {
-- String bookId
-+ String getBookId()
-+ void setBookId(String)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class GetBookRequest.Builder {
-- String bookId
-+ Builder withBookId(String)
-+ GetBookRequest build()
-}
-class GetPublishingStatusRequest {
-- String publishingRecordId
-+ String getPublishingRecordId()
-+ void setPublishingRecordId(String)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class GetPublishingStatusRequest.Builder {
-- String publishingRecordId
-+ Builder withPublishingRecordId(String)
-+ GetPublishingStatusRequest build()
-}
+
+
 class RecommendationsServiceClient {
 - RecommendationsService recommendationsService
 + List<BookRecommendation> getBookRecommendations(BookGenre)
@@ -178,72 +22,7 @@ class RecommendationsServiceClient {
 class PublishingStatusNotFoundException {
 - {static} long serialVersionUID
 }
-class KindleFormattedBook {
-- String bookId
-- String title
-- String author
-- String text
-- BookGenre genre
-+ String getBookId()
-+ String getTitle()
-+ String getAuthor()
-+ String getText()
-+ BookGenre getGenre()
-+ {static} KindleFormattedBook.Builder builder()
-}
-class KindleFormattedBook.Builder {
-- String bookId
-- String title
-- String author
-- String text
-- BookGenre genre
-+ KindleFormattedBook.Builder withBookId(String)
-+ KindleFormattedBook.Builder withTitle(String)
-+ KindleFormattedBook.Builder withAuthor(String)
-+ KindleFormattedBook.Builder withText(String)
-+ KindleFormattedBook.Builder withGenre(BookGenre)
-+ KindleFormattedBook build()
-}
-class Controller {
-- {static} ApplicationComponent component
-+ ResponseEntity<?> getBook(String)
-+ ResponseEntity<?> removeBook(String)
-+ ResponseEntity<?> submitBookForPublishing(Book)
-}
-class NoOpTask {
-- {static} Logger LOGGER
-+ void run()
-}
-class GetPublishingStatusActivity {
-+ execute(GetPublishingStatusRequest) : GetPublishingStatusResponse
-}
-class PublishingModule {
-+ BookPublisher provideBookPublisher(ScheduledExecutorService)
-+ ScheduledExecutorService provideBookPublisherScheduler()
-}
-class SubmitBookForPublishingResponse {
-- String publishingRecordId
-+ String getPublishingRecordId()
-+ void setPublishingRecordId(String)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class SubmitBookForPublishingResponse.Builder {
-- String publishingRecordId
-+ Builder withPublishingRecordId(String)
-+ SubmitBookForPublishingResponse build()
-}
-class PublishingStatus {
-+ {static} String QUEUED
-+ {static} String IN_PROGRESS
-+ {static} String FAILED
-+ {static} String SUCCESSFUL
-}
-class RecommendationsCoralConverter {
-+ {static} List<BookRecommendation> toCoral(List<com.amazon.ata.recommendationsservice.types.BookRecommendation>)
-+ {static} BookRecommendation toCoral(com.amazon.ata.recommendationsservice.types.BookRecommendation)
-}
+
 class CatalogItemVersion {
 - @DynamoDBHashKey bookId : String
 - @DynamoDBRangeKey version : int
@@ -270,41 +49,8 @@ class CatalogItemVersion {
 + boolean equals(Object)
 + int hashCode()
 }
-class KindlePublishingUtils {
-- {static} Map<PublishingRecordStatus,String> statusToMessage
-+ {static} String generateBookId()
-+ {static} String generatePublishingRecordId()
-+ {static} String generatePublishingStatusMessage(PublishingRecordStatus)
-}
-class ATAKindlePublishingServiceManager {
-- {static} Logger log
-- BookPublisher bookPublisher
-+ void initialize()
-+ void verify()
-+ void start()
-+ void stop()
-}
-class GetPublishingStatusResponse {
-- List<PublishingStatusRecord> publishingStatusHistory
-+ List<PublishingStatusRecord> getPublishingStatusHistory()
-+ void setPublishingStatusHistory(List<PublishingStatusRecord>)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class GetPublishingStatusResponse.Builder {
-- List<PublishingStatusRecord> publishingStatusHistory
-+ Builder withPublishingStatusHistory(List<PublishingStatusRecord>)
-+ GetPublishingStatusResponse build()
-}
-enum PublishingRecordStatus {
-+  QUEUED
-+  IN_PROGRESS
-+  FAILED
-+  SUCCESSFUL
-}
-class RemoveBookFromCatalogResponse {
-}
+
+
 class GetBookActivity {
 - RecommendationsServiceClient recommendationServiceClient
 - CatalogDao catalogDao
@@ -324,93 +70,17 @@ class PublishingStatusItem {
 + String getBookId()
 + void setBookId(String)
 }
-class ClientsModule {
-+ RecommendationsServiceClient provideRecommendationsServiceClient(RecommendationsService)
-}
-class RemoveBookFromCatalogRequest {
-- String bookId
-+ String getBookId()
-+ void setBookId(String)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class RemoveBookFromCatalogRequest.Builder {
-- String bookId
-+ Builder withBookId(String)
-+ RemoveBookFromCatalogRequest build()
-}
-class KindleFormatConverter {
-+ {static} KindleFormattedBook format(BookPublishRequest)
-}
-class PublishingStatusRecord {
-- String status
-- String statusMessage
-- String bookId
-+ String getStatus()
-+ void setStatus(String)
-+ String getStatusMessage()
-+ void setStatusMessage(String)
-+ String getBookId()
-+ void setBookId(String)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class PublishingStatusRecord.Builder {
-- String status
-- String statusMessage
-- String bookId
-+ Builder withStatus(String)
-+ Builder withStatusMessage(String)
-+ Builder withBookId(String)
-+ PublishingStatusRecord build()
-}
-class App {
-+ {static} ApplicationComponent component
-+ {static} void main(String[])
-}
-class RemoveBookFromCatalogActivity {
-+ execute(RemoveBookFromCatalogRequest) : RemoveBookFromCatalogResponse
-}
-class SubmitBookForPublishingRequest {
-- String bookId
-- String title
-- String author
-- String text
-- String genre
-+ String getBookId()
-+ void setBookId(String)
-+ String getTitle()
-+ void setTitle(String)
-+ String getAuthor()
-+ void setAuthor(String)
-+ String getText()
-+ void setText(String)
-+ String getGenre()
-+ void setGenre(String)
-+ boolean equals(Object)
-+ int hashCode()
-+ {static} Builder builder()
-}
-class SubmitBookForPublishingRequest.Builder {
-- String bookId
-- String title
-- String author
-- String text
-- String genre
-+ Builder withBookId(String)
-+ Builder withTitle(String)
-+ Builder withAuthor(String)
-+ Builder withText(String)
-+ Builder withGenre(String)
-+ SubmitBookForPublishingRequest build()
-}
+
 class PublishingStatusDao {
 - dynamoDbMapper : DynamoDBMapper
 - {static} String ADDITIONAL_NOTES_PREFIX
 + PublishingStatusItem setPublishingStatus(String,PublishingRecordStatus,String)
 + PublishingStatusItem setPublishingStatus(String,PublishingRecordStatus,String,String)
+}
+
+class RemoveBookFromCatalogActivity {
+- catalogDao : CatalogDao
++ execute(RemoveBookFromCatalogRequest removeBookFromCatalogRequest) : RemoveBookFromCatalogResponse
 }
 PublishingStatusDao --* SubmitBookForPublishingActivity
 GetBookActivity --|> RecommendationsServiceClient
@@ -419,19 +89,8 @@ PublishingStatusItem --|> PublishingStatusDao
 CatalogDao --|> BookNotFoundException
 CatalogDao --* GetBookActivity
 GetBookActivity *-- RecommendationsServiceClient
-GetBookResponse +.. GetBookResponse.Builder
-BookRecommendation +.. BookRecommendation.Builder
 RuntimeException <|-- BookNotFoundException
-BookPublishRequest +.. BookPublishRequest.Builder
-Book +.. Book.Builder
-GetBookRequest +.. GetBookRequest.Builder
-GetPublishingStatusRequest +.. GetPublishingStatusRequest.Builder
 RuntimeException <|-- PublishingStatusNotFoundException
-KindleFormattedBook +.. KindleFormattedBook.Builder
-Runnable <|.. NoOpTask
-SubmitBookForPublishingResponse +.. SubmitBookForPublishingResponse.Builder
-GetPublishingStatusResponse +.. GetPublishingStatusResponse.Builder
-RemoveBookFromCatalogRequest +.. RemoveBookFromCatalogRequest.Builder
-PublishingStatusRecord +.. PublishingStatusRecord.Builder
-SubmitBookForPublishingRequest +.. SubmitBookForPublishingRequest.Builder
+
+
 @enduml

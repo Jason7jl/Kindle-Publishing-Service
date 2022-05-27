@@ -41,7 +41,7 @@ CatalogDao <-- DynamoDB : return Book with (inactive to true) publishing status
 deactivate DynamoDB
 CatalogDao --> RemoveBookFromCatalogActivity : return Book with (inactive to true) publishing status
 deactivate CatalogDao
-RemoveBookFromCatalogActivity --> "Load Balance/ECS": return Book with (inactive to true) publishing status
+RemoveBookFromCatalogActivity --> "Load Balance/ECS": return RemoveBookFromCatalogResponse Book with (inactive to true) publishing status
 deactivate RemoveBookFromCatalogActivity
 "Load Balance/ECS" --> Client : 200 Response
 deactivate "Load Balance/ECS"

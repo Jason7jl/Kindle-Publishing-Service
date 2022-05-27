@@ -1,4 +1,4 @@
-# Unit 6 Project Design Doc
+# Kindle Publishing Service
 
 ## Background
 
